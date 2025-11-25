@@ -1,6 +1,5 @@
-const KEY = "223343sdf";
 
-function checkapiKeyHeader(req, res) {
+function checkapiKeyHeader(req, res , next) {
     const apiKey = req.headers['x-api-key'];
 
     if (apiKey !== KEY) {
@@ -9,8 +8,7 @@ function checkapiKeyHeader(req, res) {
         return;
     }
 
-    res.statusCode = 200;
-    res.end("You are authorized!");
+    next();
 }
 
 export {
