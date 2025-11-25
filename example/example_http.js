@@ -62,9 +62,9 @@ const limitMiddleware = CreateDailyUsageTracker({
 // 5) Create a simple HTTP server to test
 const server = http.createServer(async (req, res) => {
   // this will run for every request if the daily limit is reached then we will api key reached error
-  limitMiddleware(req, res, () => {
-    // call the middleware manually
-    authMiddleware(req, res, () => {
+  //     // call the middleware manually
+  authMiddleware(req, res, () => {
+    limitMiddleware(req, res, () => {
       // Both checks passed
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
