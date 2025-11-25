@@ -1,12 +1,12 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { validateApiKey } from '../helper/validateKey';
+import { validateApiKey } from '../helper/validateKey.js';
 
 // hash the api key then store in the db
 function hashApiKey(key) {
     return createHash("sha256").update(key).digest("hex");
 }
 
-export function compareHashedApiKey(rawKey, storedHash) {
+function compareHashedApiKey(rawKey, storedHash) {
 
     let isValidkey = validateApiKey(rawKey);
 
