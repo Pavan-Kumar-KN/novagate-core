@@ -6,7 +6,6 @@ function CreateDailyUsageTracker(options) {
 
     let data = storage.getData(dbKey); // user object we will now
 
-    await storage.incrementUsage(dbKey);
     
     if (data?.presentUsage >= data?.dailyUsage) {
       res.statusCode = 429;
@@ -15,6 +14,8 @@ function CreateDailyUsageTracker(options) {
          error: "Daily API limit exceeded"
        }));
     }
+
+    await storage.incrementUsage(dbKey);
 
     next();
   };

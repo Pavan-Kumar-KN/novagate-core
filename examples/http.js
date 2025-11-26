@@ -1,11 +1,11 @@
 import http from "http";
-import { createAuthMiddleware } from "../middlewares/auth.js";
-import { hashApiKey } from "../helper/hash.js";
-import { CreateDailyUsageTracker } from "../middlewares/limit.js";
-import { createBurstLimitMiddleware } from "../middlewares/burst.js";
-import { createLoggerMiddleware } from "../middlewares/logger.js";
-import { createUsageTracker } from "../middlewares/apiusagetracker.js";
-import { createSuspensionMiddleware } from "../middlewares/suspension.js";
+import { createAuthMiddleware } from "../src/auth/auth.js";
+import { hashApiKey } from "../src/util/hash.js";
+import { CreateDailyUsageTracker } from "../src/limits/limit.js";
+import { createBurstLimitMiddleware } from "../src/limits/burst.js";
+import { createLoggerMiddleware } from "../src/trackers/logger.js";
+import { createUsageTracker } from "../src/trackers/apiusagetracker.js";
+import { createSuspensionMiddleware } from "../src/security/suspension.js";
 
 // 1) Define a RAW key that the client will use
 const RAW_KEY = "123456789";

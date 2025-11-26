@@ -1,27 +1,27 @@
-| Feature                           | Description                                                                        |
-| --------------------------------- | ---------------------------------------------------------------------------------- |
-| **API Key Authentication**        | Validates client calls using hashed API keys (never store raw keys).               |
-| **Pluggable Storage**             | Users provide their own DB storage handlers (Mongo / SQL / Redis / File / Memory). |
-| **Daily Request Limit**           | Blocks clients who exceed daily allowed API calls.                                 |
-| **Burst Rate Limiting**           | Prevents spam by restricting high request frequency per second.                    |
-| **Usage Tracking Hook**           | Emits request usage so the user can store it anywhere.                             |
-| **Logging Hook**                  | Emits request logs (URL, key, timestamp, status, response time).                   |
-| **Suspension Trigger (Optional)** | Calls a callback to suspend abusive clients.                                       |
-| **Framework-Agnostic**            | Works with raw HTTP, Express, Fastify, Hono, Next API, etc.                        |
-| **Hash-Based Key Validation**     | Only hashes are compared → secure even if DB leaks.                                |
+# 🔐 Novagate — Secure API Key Gateway for Node.js
 
-## The usecase in the package 
-```
-import novagate from "novagate-core";
+Novagate is a flexible and fast API key middleware system for Node.js apps.  
+It provides authentication, usage limits, burst protection, suspension, logging, and analytics.
 
-app.use(novagate({
-  limits: { daily: 1000, burst: 30 },
-  keyLoader: async (apiKeyHash) => {}, // get client info
-  storage: {
-    incrementUsage: async (clientId) => {},
-    log: async (logData) => {},
-    suspendClient: async (clientId) => {}
-  }
-}));
-```
+### ✨ Features
 
+| Feature | Description |
+|---------|-------------|
+| 🔑 Secure API Key Auth | SHA-256 hashing + timing-safe comparisons |
+| 📊 Usage Tracking | Track all requests, even blocked ones |
+| 📌 Daily Limits | Define per-key daily quota |
+| ⚡ Burst Limit | Protect against short-term spikes |
+| 🛑 Auto Suspension | Ban abusive keys automatically |
+| 📑 Logging | Capture latency + status + endpoint |
+| 🚀 Framework Agnostic | Works with HTTP, Express, Fastify, Hono, etc. |
+| 🔌 Pluggable Storage | Use MongoDB, Redis, SQL, Key-Value, etc. |
+
+---
+
+## 🚀 Installation
+
+```bash
+npm install novagate
+
+
+Please Check /examples folder for usage examples.

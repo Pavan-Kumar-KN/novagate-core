@@ -1,15 +1,43 @@
 {
   "name": "novagate",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "type": "module",
   "dependencies": {
     "express": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pavan-Kumar-KN/novagate-core.git"
+  },
+  "keywords": [
+    "api",
+    "api-key",
+    "api-security",
+    "api-auth",
+    "authentication",
+    "authorization",
+    "security",
+    "rate-limit",
+    "quota",
+    "burst-limit",
+    "throttle",
+    "ddos-protection",
+    "usage-tracking",
+    "analytics",
+    "logging",
+    "monitoring",
+    "suspension",
+    "abuse-detection",
+    "gateway",
+    "api-gateway",
+    "middleware",
+    "nodejs-security"
+  ]
 }
