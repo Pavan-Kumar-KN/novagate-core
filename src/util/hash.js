@@ -1,5 +1,5 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { validateApiKey } from '../helper/validateKey.js';
+import { validateApiKey } from './validate.js';
 
 // hash the api key then store in the db
 function hashApiKey(key) {

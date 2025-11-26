@@ -13,5 +13,5 @@ export { createUsageTracker } from "./trackers/apiusagetracker.js";
 export { createLoggerMiddleware } from "./trackers/logger.js";
 
 // Utils (optional exports)
-export { hashApiKey, compareHashedApiKey } from "./utils/hash.js";
-export { validateApiKey , generateApiKey , checkapiKeyHeader } from "./utils/validate.js";
+export { hashApiKey, compareHashedApiKey } from "./util/hash.js";
+export { validateApiKey , generateApiKey , checkapiKeyHeader } from "./util/validate.js";

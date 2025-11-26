@@ -1,5 +1,5 @@
-import { validateApiKey } from "../helper/validateKey.js";
-import { hashApiKey, compareHashedApiKey } from "../helper/hash.js";
+import { validateApiKey } from "../util/validate.js";
+import { hashApiKey, compareHashedApiKey } from "../util/hash.js";
 
 export function createAuthMiddleware(options) {
   const { keyLoader } = options;
