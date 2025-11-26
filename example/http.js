@@ -5,6 +5,7 @@ import { CreateDailyUsageTracker } from "../middlewares/limit.js";
 import { createBurstLimitMiddleware } from "../middlewares/burst.js";
 import { createLoggerMiddleware } from "../middlewares/logger.js";
 import { createUsageTracker } from "../middlewares/apiusagetracker.js";
+import { createSuspensionMiddleware } from "../middlewares/suspension.js";
 
 // 1) Define a RAW key that the client will use
 const RAW_KEY = "123456789";
@@ -33,6 +34,7 @@ let user = [
     dailyUsage: 20,
     presentUsage: 0,
     burstLimit: 3,
+    suspended: false,
   },
   {
     id: 2,
@@ -41,6 +43,7 @@ let user = [
     dailyUsage: 20,
     presentUsage: 0,
     burstLimit: 5,
+    suspended: false,
   },
 ];
 
@@ -92,24 +95,47 @@ const usageTracker = createUsageTracker({
   },
 });
 
+const suspendMiddleware = createSuspensionMiddleware({
+  storagefn: {
+    getSuspended: async (key) => {
+      const userData = user.find((u) => u.hashedKey === key);
+      return userData?.suspended ?? false; // false if not found
+    },
+    suspend: async (key) => {
+      const userData = user.find((u) => u.hashedKey === key);
+      if (userData) {
+        userData.suspended = true;
+        return true;
+      }
+      return false;
+    },
+    getData: async (key) => {
+      const userData = user.find((u) => u.hashedKey === key);
+      return userData?.presentUsage ?? 0;
+    },
+  },
+});
+
 // 5) Create a simple HTTP server to test
 const server = http.createServer(async (req, res) => {
   // this will run for every request if the daily limit is reached then we will api key reached error
   //     // call the middleware manually
   authMiddleware(req, res, () => {
-    usageTracker(req, res, () => {
-      logger(req, res, () => {
-        dailyLimitMiddleware(req, res, () => {
-          burstLimitMiddleware(req, res, () => {
-            // Both checks passed
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.end(
-              JSON.stringify({
-                message: "Request successful",
-                user: req.auth_key,
-              }),
-            );
+    suspendMiddleware(req, res, () => {
+      usageTracker(req, res, () => {
+        logger(req, res, () => {
+          dailyLimitMiddleware(req, res, () => {
+            burstLimitMiddleware(req, res, () => {
+              // Both checks passed
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.end(
+                JSON.stringify({
+                  message: "Request successful",
+                  user: req.auth_key,
+                }),
+              );
+            });
           });
         });
       });

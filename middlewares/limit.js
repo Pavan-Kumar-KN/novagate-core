@@ -6,6 +6,8 @@ function CreateDailyUsageTracker(options) {
 
     let data = storage.getData(dbKey); // user object we will now
 
+    await storage.incrementUsage(dbKey);
+    
     if (data?.presentUsage >= data?.dailyUsage) {
       res.statusCode = 429;
        res.setHeader("Content-Type", "application/json");
@@ -14,7 +16,6 @@ function CreateDailyUsageTracker(options) {
        }));
     }
 
-    await storage.incrementUsage(dbKey);
     next();
   };
 }
