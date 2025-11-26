@@ -4,6 +4,7 @@ import { hashApiKey } from "../helper/hash.js";
 import { CreateDailyUsageTracker } from "../middlewares/limit.js";
 import { createBurstLimitMiddleware } from "../middlewares/burst.js";
 import { createLoggerMiddleware } from "../middlewares/logger.js";
+import { createUsageTracker } from "../middlewares/apiusagetracker.js";
 
 // 1) Define a RAW key that the client will use
 const RAW_KEY = "123456789";
@@ -84,23 +85,32 @@ const logger = createLoggerMiddleware({
   },
 });
 
+const usageTracker = createUsageTracker({
+  trackUsage: async ({ key, method, url, timestamp }) => {
+    console.log("TRACK:", key, method, url);
+    // save to DB if needed
+  },
+});
+
 // 5) Create a simple HTTP server to test
 const server = http.createServer(async (req, res) => {
   // this will run for every request if the daily limit is reached then we will api key reached error
   //     // call the middleware manually
   authMiddleware(req, res, () => {
-    dailyLimitMiddleware(req, res, () => {
-      burstLimitMiddleware(req, res, () => {
-        logger(req, res, () => {
-          // Both checks passed
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.end(
-            JSON.stringify({
-              message: "Request successful",
-              user: req.auth_key,
-            }),
-          );
+    usageTracker(req, res, () => {
+      logger(req, res, () => {
+        dailyLimitMiddleware(req, res, () => {
+          burstLimitMiddleware(req, res, () => {
+            // Both checks passed
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.end(
+              JSON.stringify({
+                message: "Request successful",
+                user: req.auth_key,
+              }),
+            );
+          });
         });
       });
     });

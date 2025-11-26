@@ -8,8 +8,10 @@ function CreateDailyUsageTracker(options) {
 
     if (data?.presentUsage >= data?.dailyUsage) {
       res.statusCode = 429;
-      res.statusMessage = "Daily API limit exceeded";
-      return res.end();
+       res.setHeader("Content-Type", "application/json");
+       return res.end(JSON.stringify({
+         error: "Daily API limit exceeded"
+       }));
     }
 
     await storage.incrementUsage(dbKey);
