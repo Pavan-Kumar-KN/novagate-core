@@ -3,6 +3,7 @@ import { createAuthMiddleware } from "../middlewares/auth.js";
 import { hashApiKey } from "../helper/hash.js";
 import { CreateDailyUsageTracker } from "../middlewares/limit.js";
 import { createBurstLimitMiddleware } from "../middlewares/burst.js";
+import { createLoggerMiddleware } from "../middlewares/logger.js";
 
 // 1) Define a RAW key that the client will use
 const RAW_KEY = "123456789";
@@ -30,7 +31,7 @@ let user = [
     hashedKey: HASHED_KEY,
     dailyUsage: 20,
     presentUsage: 0,
-    burstLimit: 3
+    burstLimit: 3,
   },
   {
     id: 2,
@@ -38,7 +39,7 @@ let user = [
     apiKey: "12346678940",
     dailyUsage: 20,
     presentUsage: 0,
-    burstLimit: 5
+    burstLimit: 5,
   },
 ];
 
@@ -67,15 +68,21 @@ const dailyLimitMiddleware = CreateDailyUsageTracker({
 
 const burstLimitMiddleware = createBurstLimitMiddleware({
   getLimit: (hashedKey) => {
-    const userData = user.find(u => u.hashedKey === hashedKey);
+    const userData = user.find((u) => u.hashedKey === hashedKey);
     return userData?.burstLimit ?? 0; // 0 if not found
   },
-  // map methods to set the data 
+  // map methods to set the data
   setData: (dbKey, entry) => burstMap.set(dbKey, entry),
   getData: (dbkey) => burstMap.get(dbkey),
-  waitSec: 7000
-})
+  waitSec: 7000,
+});
 
+const logger = createLoggerMiddleware({
+  log: (info) => {
+    console.log("LOG:", info);
+    // OR save in DB
+  },
+});
 
 // 5) Create a simple HTTP server to test
 const server = http.createServer(async (req, res) => {
@@ -84,16 +91,18 @@ const server = http.createServer(async (req, res) => {
   authMiddleware(req, res, () => {
     dailyLimitMiddleware(req, res, () => {
       burstLimitMiddleware(req, res, () => {
-        // Both checks passed
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.end(
-          JSON.stringify({
-            message: "Request successful",
-            user: req.auth_key,
-          }),
-        );
-      })
+        logger(req, res, () => {
+          // Both checks passed
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.end(
+            JSON.stringify({
+              message: "Request successful",
+              user: req.auth_key,
+            }),
+          );
+        });
+      });
     });
   });
 });
