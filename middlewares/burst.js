@@ -14,9 +14,7 @@ function createBurstLimitMiddleware(options) {
 
         let now = Date.now();
         let entry = getData(dbKey) || {count : 0 , time : now};
-
-        console.log("the entry data " , entry);
-
+        
         if (now - entry.time < waitSec) {
             entry.count++;
         } else {
@@ -28,8 +26,9 @@ function createBurstLimitMiddleware(options) {
         setData(dbKey , entry);
 
         if (entry.count > burstLimit) {
-            res.statusCode = 429;
-            return res.end("Too many requests (burst limit exceeded)");
+          res.statusCode = 429;
+          res.statusMessage = "Limit is exceeded";
+          return res.end();
         }
 
         next();
