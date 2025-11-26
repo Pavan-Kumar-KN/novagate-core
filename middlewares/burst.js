@@ -27,8 +27,10 @@ function createBurstLimitMiddleware(options) {
 
         if (entry.count > burstLimit) {
           res.statusCode = 429;
-          res.statusMessage = "Limit is exceeded";
-          return res.end();
+           res.setHeader("Content-Type", "application/json");
+           return res.end(JSON.stringify({
+             error: "Burst API Count exceeded"
+           }));
         }
 
         next();
